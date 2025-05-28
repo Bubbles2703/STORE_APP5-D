@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Мои заказы</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 0 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f7f7f7;
+    }
+    .product-item {
+      margin-bottom: 10px;
+    }
+    .product-item img {
+      width: 80px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    .cancel-form {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Мои заказы</h1>
+  <p><a href="/">← Назад к товарам</a> | <a href="/logout">Выйти</a></p>
+
+  {% if orders %}
+    <table>
+      <thead>
+        <tr>
+          <th>Номер заказа</th>
+          <th>Дата</th>
+          <th>Статус</th>
+          <th>Сумма</th>
+          <th>Детали</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+            <td>{{ order.status }}</td>
+            <td>{{ "%.2f"|format(order.total_price) }} USD</td>
+            <td>
+              {% for item in order.items %}
+                <div class="product-item">
+                  {% if item.product.image_path %}
+                    <img src="/static/{{ item.product.image_path }}" alt="{{ item.product.name }}">
+                  {% endif %}
+                  {{ item.product.name }} — {{ item.quantity }} шт. × {{ "%.2f"|format(item.product.price) }} USD
+                </div>
+              {% endfor %}
+
+              {% if order.status == "в обработке" %}
+                <form method="post" action="/orders/{{ order.id }}/cancel" class="cancel-form" onsubmit="return confirm('Вы уверены, что хотите отменить заказ?');">
+                  <button type="submit">❌ Отменить заказ</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>У вас пока нет заказов.</p>
+  {% endif %}
+
+</body>
+</html>

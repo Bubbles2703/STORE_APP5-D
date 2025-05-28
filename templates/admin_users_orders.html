@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Пользователи и их заказы</title>
+</head>
+<body>
+<h1>Пользователи и их заказы</h1>
+<p><a href="/">На главную</a> | <a href="/logout">Выход</a></p>
+
+{% for u in users %}
+    <h2>Пользователь: {{ u.username }} ({{ u.role }})</h2>
+
+    <h3>🛒 Текущая корзина:</h3>
+    {% if u.cart_items %}
+        <ul>
+            {% for item in u.cart_items %}
+                <li>{{ item.product.name }} — Кол-во: {{ item.quantity }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Корзина пуста</p>
+    {% endif %}
+
+    <h3>📦 Заказы:</h3>
+    {% if u.orders %}
+        <ul>
+        {% for order in u.orders %}
+            <li>
+                Заказ #{{ order.id }} от {{ order.created_at.strftime("%Y-%m-%d %H:%M") }}
+                <ul>
+                    {% for item in order.items %}
+                        <li>{{ item.product.name }} — Кол-во: {{ item.quantity }} — Цена: {{ item.price }}USD</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Заказов нет</p>
+    {% endif %}
+{% endfor %}
+
+</body>
+</html>

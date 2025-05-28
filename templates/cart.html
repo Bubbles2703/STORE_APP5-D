@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Корзина</title>
+</head>
+<body>
+    <h1>Корзина пользователя {{ user.username }}</h1>
+    <p><a href="/">На главную</a> | <a href="/logout">Выйти</a></p>
+
+    {% if cart_products %}
+        <table border="1" cellpadding="5">
+            <thead>
+                <tr>
+                    <th>Изображение</th>
+                    <th>Товар</th>
+                    <th>Цена за шт.</th>
+                    <th>Количество</th>
+                    <th>Итого</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_products %}
+                    <tr>
+                        <td>
+                            {% if item.product.image_path %}
+                                <img src="/static/{{ item.product.image_path }}" width="100" alt="{{ item.product.name }}">
+                            {% else %}
+                                <span>Нет изображения</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ "%.2f"|format(item.product.price) }} USD</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ "%.2f"|format(item.subtotal) }} USD</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="4"><strong>Общая сумма:</strong></td>
+                    <td><strong>{{ "%.2f"|format(total) }} USD</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form method="post" action="/orders/create">
+            <button type="submit">Оформить заказ</button>
+        </form>
+
+        <form method="post" action="/cart/clear" style="margin-top: 10px;">
+            <button type="submit">Очистить корзину</button>
+        </form>
+    {% else %}
+        <p>Ваша корзина пуста.</p>
+    {% endif %}
+</body>
+</html>
